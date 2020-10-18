@@ -1,0 +1,27 @@
+{% for goal in goals %}
+    <div class="col" style="max-width: 50%;">
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0">
+                    <strong>Complete Date:</strong><br />
+                    <strong>{{goal.goal_id.date | date:"d/m/Y"}}</strong>
+                </h6>
+                <a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="{% url 'checkin_custom_goal' goal.goal_id.goal_id %}">
+                    <i class="fas fa-check fa-sm text-white-50"></i> checkin today
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="m-0">{{ goal.goal_id.goal_description }}</p>
+                <div class="progress">
+                    <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0"
+                         aria-valuemax="{{goal.total_progress}}" style="width: {{goal.percentage }}%; padding: 0">{{ goal.percentage }}%</div>
+                    <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <h3 style="text-align: center;">No goals yet</h3>
+    </div>
+{% endfor %}

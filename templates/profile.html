@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %} profile {% endblock %}
+
+{% block content %}
+    {% load static %}
+<h3 class="text-dark mb-4"></h3>
+<div class="row mb-3">
+    <div class="col-lg-4">
+        <div class="card mb-3" style="height: 35%;">
+            <div class="card-body text-center shadow">
+                <img class="rounded-circle mb-3 mt-4" id="profile-picture" src="/media/{{ profile_picture }}" width="160" height="160" />
+                <div class="mb-3">
+                    <form id="change-picture" method="post" enctype="multipart/form-data" action="{% url 'update_image' %}">
+                        {% csrf_token %}
+                        <div style="height:0;overflow:hidden">
+                           <input type="file" accept="image/*" name="image" id="pic" onchange="$('#change-picture').submit();"/>
+                        </div>
+                        <button class="btn btn-primary btn-sm" type="submit"
+                                onclick="event.preventDefault();$('#pic').click();">Change Photo</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        <div class="card shadow" style="height: 62%;">
+            <div class="card-header py-3">
+                <p class="text-primary m-0 font-weight-bold">Change password</p>
+            </div>
+            <div class="card-body">
+                <form id="change-password" action="{% url 'change_password' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="current"><strong>Current password</strong></label>
+                        <input type="password" class="form-control" name="current" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="new"><strong>New password</strong></label>
+                        <input type="password" class="form-control" name="new" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="new_repeat"><strong>Repeat new password</strong></label>
+                        <input type="password" class="form-control" name="repeat" required />
+                    </div>
+                    <div class="form-group text-right">
+                        <button class="btn btn-primary btn-sm" type="submit">Change</button>
+                    </div>
+                </form>
+                <div role="alert" class="alert alert-success fade hide" id="change-alert">
+                    <span><strong></strong><br /></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="row mb-3 d-none">
+            <div class="col">
+                <div class="card text-white bg-primary shadow">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <p class="m-0">Peformance</p>
+                                <p class="m-0"><strong>65.2%</strong></p>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                        </div>
+                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-success shadow">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col">
+                                <p class="m-0">Peformance</p>
+                                <p class="m-0"><strong>65.2%</strong></p>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                        </div>
+                        <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">User Details</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="profile" method="post" action="{% url "edit_profile" %}">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="username"><strong>Username</strong></label>
+                                        <input type="text" class="form-control info" name="username" placeholder="Username" value="{{ username }}"/>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="email"><strong>Email Address</strong></label>
+                                        <input type="email" class="form-control info" placeholder="user@example.com" name="email" value="{{ email }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="first_name"><strong>First Name</strong></label>
+                                        <input type="text" class="form-control info" placeholder="First Name" name="first_name" value="{{ first_name }}"/>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="last_name"><strong>Last Name</strong></label>
+                                        <input type="text" class="form-control info" placeholder="Last Name" name="last_name" value="{{ last_name }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="date_of_birth"><strong>Date of birth</strong><br /></label>
+                                        <input class="form-control info" type="date" name="date_of_birth" value="{{ date_of_birth }}"/></div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="gender"><strong>Gender</strong><br /></label>
+                                        <select class="form-control info" name="gender">
+                                            <optgroup label="gender">
+                                                <option value="Male"
+                                                        {% if gender == "Male" %} selected {% endif %}>
+                                                    Male
+                                                </option>
+                                                <option value="Female"
+                                                        {% if gender == "Female" %} selected {% endif %}>
+                                                    Female
+                                                </option>
+                                                <option value="Prefer_not_to_say"
+                                                        {% if gender == "Prefer_not_to_say" %} selected {% endif %}>
+                                                    Prefer not to say
+                                                </option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="height"><strong>height (cm)</strong><br /></label>
+                                        <input type="number" class="form-control info" name="height" value="{{ height }}"/>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="weight"><strong>Weight (kg)</strong><br /></label>
+                                        <input type="number" class="form-control info" name="weight" value="{{ weight }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="waist_circumference"><strong>waist circumference (cm)</strong><br /></label>
+                                        <input type="number" class="form-control info" name="waist_circumference" value="{{ waist_circumference }}"/>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm" id="save-info" type="submit" disabled>Save info</button>
+                            </div>
+                        </form>
+                        <div role="alert" class="alert alert-success fade hide" id="edit-alert">
+                            <span><strong></strong><br /></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom_script %}
+<script type="text/javascript">
+    $(".info").change(function() {
+        $("#save-info").removeAttr("disabled");
+    });
+    $("#pic").change(function(event) {
+        $("#profile-picture").attr("src", URL.createObjectURL(event.target.files[0]));
+    });
+    $("#change-picture").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+        $.ajax({
+            url : form.attr('action'), // the endpoint
+            type : "POST", // http method
+            data : new FormData(this),
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            // handle a successful response
+            success : function(json) {
+                console.log(json); // log the returned json to the console
+                console.log("success"); // another sanity check
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    });
+    silent_send("#change-password", "#change-alert");
+    silent_send("#profile", "#edit-alert");
+</script>
+{% endblock %}

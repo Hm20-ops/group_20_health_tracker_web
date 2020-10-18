@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %} group member {% endblock %}
+
+{% block content %}
+<h3 class="text-dark mb-4">Group members</h3>
+<div class="card shadow">
+    <div class="card-header py-3">
+        <p class="text-primary m-0 font-weight-bold">All members</p>
+    </div>
+    <div class="card-body">
+{#        <div class="row">#}
+{#            <div class="col-md-6">#}
+{#                <div class="text-md-right dataTables_filter" id="dataTable_filter">#}
+{#                    <label>#}
+{#                        <input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" />#}
+{#                    </label>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+        <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+            <table class="table dataTable my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Progress</th>
+                        <th>D.O.B.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        {% if user == is_admin %}
+                            <tr>
+                            {% for goal in goals %}
+                                {% if user == goal.user_id %}
+                                    {% if goal.goal_id.goal_id == custom_goal_id %}
+                                    <td>
+                                        <img class="rounded-circle mr-2" width="30" height="30" src='/media/{{user.userprofile.profile_picture}}' />
+                                        {{ user.username }}  <span class="admin_tag"><strong>Admin</strong></span>
+                                    </td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0" aria-valuemax="{{goal.total_progress}}" style="width: {{goal.percentage }}%; padding: 0">{{ goal.percentage }}%</div>
+{#                                            <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>#}
+                                        </div>
+                                    </td>
+                                    <td>{{ user.userprofile.date_of_birth }}</td>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            </tr>
+                            {% else %}
+                                <tr>
+                                    {% for goal in goals %}
+                                        {% if user == goal.user_id %}
+                                            {% if goal.goal_id.goal_id == custom_goal_id %}
+                                                <td>
+                                                    <img class="rounded-circle mr-2" width="30" height="30" src='/media/{{user.userprofile.profile_picture}}' />
+                                                    {{ user.username }}
+                                                </td>
+                                                <td>
+                                                     <div class="progress">
+                                                        <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0" aria-valuemax="{{goal.total_progress}}" style="width: {{goal.percentage }}%; padding: 0">{{ goal.percentage }}%</div>
+{#                                                        <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>#}
+                                                    </div>
+                                                </td>
+                                                <td>{{ user.userprofile.date_of_birth }}</td>
+{#                                                    {% else %}#}
+{#                                                    <p>{{ goal.goal_id.goal_id }} and {{ custom_goal_id }}</p>#}
+                                            {% endif %}
+{#                                            {% else %}#}
+{#                                                <p>{{ user }} and {{ goal.user_id }}</p>#}
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

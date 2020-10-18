@@ -1,0 +1,28 @@
+{% for group in belongs %}
+    <div class="col">
+        <a href={% url 'group_page' group_id=group.id%}>
+            <div class="card mb-4 custom-card">
+                <div class="card-header py-3">
+                    <h6 class="m-0">
+                        <strong>{{ group.name }}</strong>
+                    </h6>
+                </div>
+                {% for goal in goals %}
+                    {% if goal.goal_id.group_id == group.id %}
+                        <div class="card-body">
+                            <p class="m-0">{{ goal.goal_id.date }}</p>
+                            <p class="m-0">{{ goal.goal_id.goal_description }}</p>
+                            <div class="progress">
+                                <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0" aria-valuemax="{{goal.total_progress}}" style="width: {{goal.percentage }}%; padding: 0">{{ goal.percentage }}%</div>
+                                <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </a>
+    </div>
+{% empty %}
+    <h3 style="text-align: center;">You don't belong to any group</h3>
+{% endfor %}
+<div class="clearfix"></div>

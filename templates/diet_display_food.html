@@ -1,0 +1,77 @@
+    <h3 class="text-dark mb-0" style="padding-top: 1em;">Breakfast</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Food</th>
+                <th>Amount/g</th>
+                <th>Calorific Value</th>
+            </tr>
+            </thead>
+            <tbody class="table_body">
+            {% for intake in daily_intake %}
+                {% if intake.meal_category == 'Breakfast' %}
+                    <tr id="breakfast">
+                                                <td>{{ intake.food_id }}</td>
+{#                                                <p>{{intake.food_id}}</p>#}
+                                                <td>{{ intake.food_amount }}</td>
+                                                <td>{{ intake.calorie_eaten_per_food }}</td>
+{#                        {% include 'updated_table_no_refresh.html' %}#}
+
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <h3 class="text-dark mb-0" style="padding-top: 1em;">Lunch</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Food</th>
+                <th>Amount/g</th>
+                <th>Calorific value</th>
+            </tr>
+            </thead>
+            <tbody class="table_body">
+            {% for intake in daily_intake %}
+                {% if intake.meal_category == 'Lunch' %}
+                    <tr >
+                                                <td>{{ intake.food_id }}</td>
+                                                <td>{{ intake.food_amount }}</td>
+                                                <td>{{ intake.calorie_eaten_per_food }}</td>
+{#                        {% include 'updated_table_no_refresh.html' %}#}
+
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <h3 class="text-dark mb-0" style="padding-top: 1em;">Dinner</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Food</th>
+                <th>Amount/g</th>
+                <th>Calorific value</th>
+            </tr>
+            </thead>
+            <tbody class="table_body">
+            {% for intake in daily_intake %}
+                {% if intake.meal_category == 'Dinner' %}
+                    <tr id="dinner">
+                        {#                    how does django know when to replace food.id with the food name which is in another table #}
+                        {#                        This is witchcraft i tell you. Django was made at Hogwarts,school of witchcraft and wizardry#}
+                        <td>{{ intake.food_id }}</td>
+                        <td>{{ intake.food_amount }}</td>
+                        <td>{{ intake.calorie_eaten_per_food }}</td>
+
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>

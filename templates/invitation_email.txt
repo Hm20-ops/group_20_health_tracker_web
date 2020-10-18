@@ -1,0 +1,6 @@
+Hi {{ name }},
+
+{{ sender }} invited you to join specify group here.
+To accept the invitation, please click the link below:
+{{ link }}
+-- Health Tracker Team

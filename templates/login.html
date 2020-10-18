@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html style="margin-top: 0em;height: 100%;">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Login - Health tracker</title>
+    {% load static %}
+    <link rel="stylesheet" href={% static "/bootstrap/css/bootstrap.min.css" %}>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href={% static "/fonts/fontawesome5-overrides.min.css" %}>
+    <link rel="stylesheet" href={% static "/css/health_tracker.css" %}>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
+</head>
+
+<body class="bg-gradient-primary"
+      style="width: 100%;height: 100%;background-image: url({% static '/img/login_background.jpg' %});font-family: Montserrat, sans-serif;">
+    <nav class="navbar navbar-light navbar-expand sticky-top text-uppercase text-center
+                text-sm-center text-md-center text-lg-center text-xl-center float-none
+                float-sm-none float-md-none float-lg-none float-xl-none justify-content-center"
+         data-aos="fade" data-aos-duration="950" style="position: relative;">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse text-uppercase text-center text-sm-center text-md-center
+                        text-lg-center text-xl-center text-white-50 justify-content-center"
+                 id="navbar-1" style="font-family: Montserrat, sans-serif;font-weight: bold;font-style: normal;font-size: 19px;">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#" style="font-size: 30px;font-weight: bold;color: rgba(255,255,255,0.9);">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-prescription-bottle-alt"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>Health tracker</span></div>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="justify-content-center" style="padding: 0;padding-right: 0px;padding-bottom: 0;padding-top: 0;padding-left: 0px;height: 86%;margin-top: 0px;width: 100%;margin-right: 0px;">
+        <div class="row justify-content-center align-items-center" style="width: 100%;height: 100%;margin: 0px;margin-right: 0px;padding-right: 20px;padding-left: 20px;">
+            <div class="col-md-6" style="margin-left: 0px;margin-top: 20px;margin-bottom: 20px;width: 100%;height: 470px;padding-right: 30px;padding-left: 30px;">
+                <form class="text-left border rounded shadow-lg float-none justify-content-center" data-aos="fade-right"
+                      data-aos-duration="950" data-aos-once="true" id="login" method="post" action={% url 'login' %} style="width:100%;height:100%;background-color:rgba(255,255,255,0.28);margin-right:0px;margin-left:0px;margin-top:0px;border-color:rgba(0,209,255,0.27);">
+                    {% csrf_token %}
+                    <h2 class="text-center text-white" style="font-family: Montserrat, sans-serif;margin-top: 20px;font-size: 42px;"><strong>Log in</strong></h2>
+                    <div class="form-group justify-content-center" style="margin-bottom: 16px;margin-right: 20px;margin-left: 20px;">
+                        <input class="form-control" type="text" name="login_username" placeholder="Username" style="width: 100%;padding-right: 11px;height: 50px;" required="">
+                    </div>
+                    <div class="form-group" style="margin-right: 20px;margin-left: 20px;">
+                        <input class="form-control" type="password" name="login_password" placeholder="Password" style="width: 100%;height: 50px;" required="">
+                    </div>
+
+                    <div class="form-group" style="margin-left: 40px;margin-right: 40px;">
+                        <button class="btn btn-primary btn-block text-white" type="submit" style="width: 100%;border-radius: 25px;height: 50px;">Log in</button>
+                    </div>
+                    <div role="alert" id="login-fail" class="alert alert-danger fade hide" style="margin-top: 1em;margin-right: 8%;margin-left: 8%;">
+                        <span><strong>login failed please check if username and password are correct</strong></span><br />
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6" style="padding-left: 30px;margin-right: 0px;margin-left: 0px;margin-top: 20px;width: 100%;margin-bottom: 20px;height: 470px;padding-right: 30px; display: grid;">
+                <form class="border rounded shadow-lg user" id="register" method="post" action="{% url 'create' %}"
+                      data-aos="fade-right" data-aos-duration="950" data-aos-once="true"
+                      style="background-color: rgba(255,255,255,0.28);padding-top: 0px;padding-right: 20px;padding-left: 20px;height: 100%;width: 100%;">
+                    {% csrf_token %}
+                    <h2 class="text-center text-white" style="font-family: Montserrat, sans-serif;margin-top: 20px;font-size: 42px;"><strong>Create</strong> <strong>an account</strong></h2>
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input class="border rounded form-control form-control-user" required type="text" id="first_name"
+                                   placeholder="First Name" name="first_name" style="font-size: 16px;">
+                        </div>
+                        <div class="invalid-feedback">
+                           <strong>First name cannot be empty</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <input class="border rounded form-control form-control-user" required type="text" id="last_name"
+                                   placeholder="Last Name" name="last_name" style="font-size: 16px;">
+                        </div>
+                        <div class="invalid-feedback">
+                           <strong>Last name cannot be empty</strong>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input class="border rounded form-control form-control-user" required type="text"
+                                   id="username" placeholder="Username" name="username" style="font-size: 16px;">
+                            <div class="invalid-feedback">
+                               <strong>username is already taken</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <input class="border rounded form-control form-control-user" required type="email"
+                                   id="email" aria-describedby="emailHelp" placeholder="Email Address"
+                                   name="email" style="font-size: 16px;">
+                            <div class="invalid-feedback">
+                               <strong>invalid email</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6 col-xl-4 mb-3 mb-sm-0">
+                            <input type="number" class="border rounded form-control form-control-user" required
+                                   placeholder="Height (cm)" style="font-size: 16px;" name="height" min=130 max=280 />
+                            <div class="invalid-feedback">
+                               <strong>height must be between 130 and 280</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4">
+                            <input type="number" class="border rounded form-control form-control-user" required
+                                   placeholder="Weight (kg)" style="font-size: 16px;" name="weight" min=30 max=635 />
+                            <div class="invalid-feedback">
+                               <strong>weight must be between 30 and 635</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-4">
+                            <select class="border rounded form-control form-control-user"
+                                    id="gender" name="gender" required
+                                    style="padding: 0 0.6rem;height: 50px;font-size: 16px;">
+                                <optgroup label="Gender">
+                                    <option value="" selected>Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Prefer_not_to_say">Prefer not to say</option>
+                                </optgroup>
+                            </select>
+                            <div class="invalid-feedback">
+                               <strong>gender cannot be empty</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input class="border rounded form-control form-control-user" type="number"
+                                   placeholder="Waist circumference (cm)" style="font-size: 16px;"
+                                   id="waist" name="waist" min=65 max=130>
+                            <div class="invalid-feedback">
+                               <strong>Waist circumference must be between 65 to 130</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <input class="border rounded form-control form-control-user" required type="text"
+                                   id="dob" placeholder="Date of birth" name="dob" style="font-size: 16px;"
+                                   onfocus="this.type='date'; this.min='1900-01-01';this.max='2010-12-31'"
+                                   onblur="(this.type='text')">
+                            <div class="invalid-feedback">
+                               <strong>Invalid date of birth</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <input class="border rounded form-control form-control-user" required pattern="[a-zA-Z0-9]+"
+                                   type="password" id="password" placeholder="Password" name="password"
+                                   style="font-size: 16px;">
+                            <div class="invalid-feedback">
+                                <strong>password must be at least 8 characters long</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <input class="border rounded form-control form-control-user" required pattern="[a-zA-Z0-9]+"
+                                   type="password" id="repeat_password" placeholder="Repeat Password" name="password_repeat"
+                                   style="font-size: 16px;">
+                            <div class="invalid-feedback">
+                                <strong>please check if password is enter correctly</strong>
+                            </div>
+                        </div>
+
+                    </div>
+                    <button class="btn btn-primary btn-block btn-user" type="submit" style="border-radius: 25px;border: none;width: 100%;padding-right: 12px;margin-right: 0px;font-size: 16px;height: 50px;">Register Account</button>
+                    <div role="alert" class="alert alert-success fade hide" id="register-alert" style="margin-top: 1em;">
+                        <span><strong>Account created successfully. Please check your email to activate your account.</strong><br /></span>
+                    </div>
+                    <hr>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script src={% static "/js/bs-init.js" %}></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
+    <script src={% static "/js/theme.js" %}></script>
+    <script>
+        $("#gender").change(function() {
+            const waist = $("#waist");
+            if(this.value === "Male"){
+                waist.attr({
+                   "min" : 70,
+                   "max" : 130
+                });
+            }
+            else if(this.value === "Female"){
+                waist.attr({
+                   "min" : 65,
+                   "max" : 115
+                });
+            }
+            else if(this.value === "Prefer_not_to_say"){
+               waist.attr({
+                   "min" : 65,
+                   "max" : 130
+               });
+            }
+            else if(this.value === ""){
+                waist.addClass('is-invalid');
+            }
+        });
+        $("#password, #repeat_password").keyup(function() {
+            alert = $('#register-alert span strong');
+            if ($('#password').val() !== $('#repeat_password').val()) {
+                if(alert.hasClass('alert-success'))
+                    alert.removeClass('alert-success').addClass('alert-danger');
+                alert.toggleClass('fade hide');
+                alert.html('Repeated Password does not match Password entered');
+            }
+        });
+
+        $('#username').blur(function(event) {
+            const field = $(this);
+            $.ajax({
+                url  : {% url 'check_username' %},
+                type : "POST", // http method
+                data : { username : field.val() },
+
+                success : function(json){
+                    if(field.hasClass('is-invalid')) {
+                        field.removeClass('is-invalid');
+                    }
+                },
+
+                error: function(xhr,errmsg,err){
+                    if(!field.hasClass('is-invalid')) {
+                        field.addClass('is-invalid');
+                    }
+                }
+            })
+        });
+
+        $("#login").submit(function (event) {
+            const form = $(this);
+            const alert = $('#login-fail');
+            const username = $('input[name=login_username]');
+            const password = $('input[name=login_password]');
+
+            event.preventDefault();
+
+            $.ajax({
+                url : form.attr('action'), // the endpoint
+                type : "POST", // http method
+                data : form.serialize(),
+
+                // handle a successful response
+                success : function(json) {
+                    console.log(json); // log the returned json to the console
+                    if (username.hasClass('is-invalid')) {
+                        username.removeClass('is-invalid');
+                        password.removeClass('is-invalid');
+                    }
+                    location.href = "/";
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    alert.toggleClass('fade hide');
+                    alert.find('span strong').html(xhr.responseText);
+                    if (!username.hasClass('is-invalid')) {
+                        username.addClass('is-invalid');
+                        password.addClass('is-invalid');
+                    }
+                }
+            });
+        });
+
+        $("#register").submit(function (event) {
+            const form = $(this);
+            const alert = $('#register-alert');
+            form.addClass('was-validated');
+            event.preventDefault();
+            console.log("creating...") // sanity check
+
+            $.ajax({
+                url : form.attr('action'), // the endpoint
+                type : "POST", // http method
+                data : form.serialize(),
+
+                // handle a successful response
+                success : function(json) {
+                    console.log(json); // log the returned json to the console
+
+                    if(alert.hasClass('alert-danger'))
+                        alert.removeClass('alert-danger').addClass('alert-success');
+                    alert.toggleClass('fade hide');
+                    alert.find('span strong').html(json);
+                    window.setTimeout(
+                        function() {
+                            alert.toggleClass('fade hide');
+                        },
+                        5000
+                    );
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                    if(alert.hasClass('alert-success'))
+                        alert.removeClass('alert-success').addClass('alert-danger');
+                    alert.toggleClass('fade hide');
+                    alert.find('span strong').html('Failed to register account. ' + xhr.responseText);
+                    window.setTimeout(
+                        function() {
+                            alert.toggleClass('fade hide');
+                        },
+                        5000
+                    );
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

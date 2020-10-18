@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %} exercise {% endblock %}
+
+{% block head %}
+    <style>
+        .ui-autocomplete {
+            max-height: 100px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+
+        /* IE 6 doesn't support max-height
+         * we use height instead, but this forces the menu to always be this tall
+         */
+        * html .ui-autocomplete {
+            height: 100px;
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block bottom_script %}
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+    <script>
+        jQuery(function () {
+            $("#search_exercise").on('keyup', function () {
+                var value = $(this).val();//extracts value of search_diet
+                $.ajax({
+                    url: "{% url 'search_exercise' %}",//set up url where to get results back from in view
+                    data:
+                        {
+                            'search': value//pass search value as json data
+                        },
+                    scroll: true,//ignore for now
+                    dataType: 'json',//receiving data type
+                    success: function (data) {
+                        $("#search_exercise").autocomplete({
+                            source: data,//the data source to autocomplete from is of list format
+                            minLength: 2,//minimum 2 keystrokes before autocomplete starts
+
+                            focus: function (event, ui) {
+                                $("#search_exercise").val(ui.item.label);
+                                return false;
+                            },
+                            select: function (event, ui) {
+                                $("#search_exercise").val(ui.item.label);
+                                $("#duration").val(ui.item.amount);
+                                $("#calories").val(ui.item.value);
+                                return false;
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        jQuery.ui.autocomplete.prototype._resizeMenu = function () {
+            var ul = this.menu.element;
+            ul.outerWidth(this.element.outerWidth());
+        }
+    </script>
+
+        <script>
+        $(document).ready(function () {
+            $('#duration').keyup(function () {
+                var duration = $(this).val();
+                var exercise_name = document.getElementById('search_exercise').value;
+                $.ajax({
+                    url: "{% url 'get_calorific_exercise_info' %}",
+                    dataType: "json",
+                    data:
+                        {
+                            name: exercise_name,
+                            duration: duration
+                        },
+                    success: function (data) {
+                        document.getElementById('calories').value = data.calorie_for_exercise;
+                    },
+                    failure: function (data) {
+                        alert('Got an error dude');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        silent_send("#add_new_exercise", "#alert");
+    </script>
+
+    <script>
+        silent_send("#daily_note", "#alert");
+    </script>
+
+    <script>
+        silent_send("#add_daily_exercise", "#alert","#exercise_wrapper","{% url 'update_exercise' %}");
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="d-sm-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-dark mb-0">Exercise</h3>
+        <div role="alert" class="alert alert-success m-auto fade hide" id="alert">
+            <span><strong></strong></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="shadow card">
+                <a class="btn btn-link text-left card-header font-weight-bold" data-toggle="collapse"
+                   aria-expanded="false"
+                   aria-controls="collapse-search" href="#collapse-search" role="button">Search exercise</a>
+                <div class="collapse" id="collapse-search">
+                    <div class="card-body">
+                        <form id="add_daily_exercise" method="post" action="{% url 'add_daily_exercise' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="exercise_name" style="margin-right: 2.2em;"><strong>Exercise
+                                    Name</strong><br/></label>
+                                <input type="text" class="form-control" name="exercise" id="search_exercise" />
+                            </div>
+                            <div class="form-group">
+                                <label for="duration" style="margin-right: 4.5em;"><strong>Duration
+                                    (minutes)</strong><br/></label>
+                                <input type="number" class="form-control" id="duration" name="duration"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="calories" style="margin-right: 1em;"><strong>Calories</strong><br/></label>
+                                <i class="fa fa-question-circle-o" rel="tooltip"
+                               title="Calories calculated based on MET value, your current weight and duration" style="position:relative; float:right;"></i><br />
+                                <input type="number" class="form-control" step="0.01" id="calories" name="calories"/>
+                            </div>
+                            <button class="btn btn-primary btn-block text-white btn-user" type="submit">Add Exercise
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="shadow card">
+                <a class="btn btn-link text-left card-header font-weight-bold" data-toggle="collapse"
+                   aria-expanded="false"
+                   aria-controls="collapse-add" href="#collapse-add" role="button">Add your own exercise</a>
+                <div class="collapse" id="collapse-add">
+                    <div class="card-body">
+                        <form method="post" id="add_new_exercise" action="{% url 'add_new_exercise' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="name" style="margin-right: 2.2em;"><strong>Name</strong><br/></label>
+                                <input type="text" class="form-control" name="name"/>
+                            </div>
+                            <div class="form-group">
+                                <label data-toggle="tooltip" for="met_value" style="margin-right: 2.2em;"
+                                       title="MET value"><strong>MET Value</strong><br/></label>
+                                <i class="fa fa-question-circle-o" rel="tooltip"
+                               title="Look up the MET value for the exercise you enter on the internet" style="position:relative; float:right;"></i><br />
+                                <input type="number" class="form-control" name="met_value"/>
+                            </div>
+                            <button class="btn btn-primary btn-block text-white btn-user" type="submit">Add New
+                                Exercise
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col" style="padding-top: 1em;">
+            <div class="shadow card">
+                <a class="btn btn-link text-left card-header font-weight-bold" data-toggle="collapse"
+                   aria-expanded="false" aria-controls="collapse-water" href="#collapse-water" role="button">Your daily exercise note</a>
+                <div class="collapse" id="collapse-water">
+                    <div class="card-body">
+                        <form method="post" id="daily_note" action="{% url 'add_daily_note' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="note"
+                                                   style="margin-right: 2.2em;"><strong>Note</strong><br/></label>
+                                                                        <i class="fa fa-question-circle-o" rel="tooltip"
+                               title="Some addtional note for your exercises today" style="position:relative; float:right;"></i><br />
+                                            <textarea class="form-control" name="note" >{{ note_value }}</textarea>
+                                        </div>
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="text-dark mb-0" style="padding-top: 1em;">Daily Exercise<br/></h3>
+    <div id="exercise_wrapper">
+        {% include 'exercise_display_table.html' %}
+    </div>
+    {#<h3 class="text-dark mb-0" style="padding-top: 1em;">Strength<br /></h3>#}
+    {#<div class="table-responsive">#}
+    {#    <table class="table">#}
+    {#        <thead>#}
+    {#            <tr>#}
+    {#                <th>Exercise</th>#}
+    {#                <th>Activity date</th>#}
+    {#                <th>Calories burnt</th>#}
+    {#            </tr>#}
+    {#        </thead>#}
+    {#        <tbody>#}
+    {#            <tr>#}
+    {#                <td>Jogging</td>#}
+    {#                <td>17/03/2020</td>#}
+    {#                <td>300</td>#}
+    {#            </tr>#}
+    {#            <tr>#}
+    {#                <td>Push up</td>#}
+    {#                <td>25/02/2020</td>#}
+    {#                <td>300</td>#}
+    {#            </tr>#}
+    {#        </tbody>#}
+    {#    </table>#}
+    {#</div>#}
+{% endblock %}

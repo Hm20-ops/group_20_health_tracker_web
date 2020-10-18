@@ -1,0 +1,20 @@
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Exercise</th>
+                <th>Duration(minutes)</th>
+                <th>Calories burnt</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for exercise in daily_exercise %}
+                <tr>
+                    <td>{{ exercise.exercise_id__specific_motion }}</td>
+                    <td>{{ exercise.duration }}</td>
+                    <td>{{ exercise.calories_burnt }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>

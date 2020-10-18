@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %} groups {% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column" id="content-wrapper">
+        <div class="d-sm-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-dark mb-0" style="width: 90%;">{{ get_name }}</h3>
+{#            <div class="d-none d-sm-block topbar-divider" style="min-width: 1%;max-width: 100%;width: 100%;"></div><button class="btn btn-primary" type="button">Invite</button>#}
+            {% if me.username == is_admin %}
+                <form method="post" id="delete_group" action={% url 'delete_group' group_id %}>
+                    {% csrf_token %}
+                    <div class="d-none d-sm-block topbar-divider" style="min-width: 1%;max-width: 100%;width: 0%;"></div><button class="btn btn-primary" type="submit" style="width: 93px;">Leave</button>
+                </form>
+                {% else %}
+                <form method="post" id="leave_group" action={% url 'leave_group' group_id %}>
+                    {% csrf_token %}
+                    <div class="d-none d-sm-block topbar-divider" style="min-width: 1%;max-width: 100%;width: 0%;"></div><button class="btn btn-primary" type="submit" style="width: 93px;">Leave</button>
+                </form>
+            {% endif %}
+        </div>
+        <div class="row mb-3">
+            <div class="col-lg-8">
+                <div class="row mb-3 d-none">
+                    <div class="col">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="card shadow mb-3">
+                            <div class="card-header d-inline-flex py-3" style="width: 100%;">
+                                <p class="text-primary m-0 font-weight-bold" style="width: 100%;"><img class="rounded-circle mr-2" width="30" height="30" src='/media/{{profile_picture}}'>Create a post</p>
+                                <div class="d-none d-sm-block topbar-divider" style="min-width: 1%;max-width: 100%;width: 100%;"></div><button class="btn btn-primary" form="posting" type="submit">Submit</button></div>
+                            <div class="card-body">
+                                <form method="post" id="posting" action={% url 'create_post' group_id%}>
+                                    {% csrf_token %}
+{#                                    <p>What's on your mind?</p>#}
+                                    <input type="text" class="form-control" name="content" />
+                                </form>
+                            </div>
+                        </div>
+                        {% for post in posts %}
+                            <div class="card shadow mb-3">
+                                <div class="card-header py-3">
+                                    <p class="text-primary m-0 font-weight-bold"><img class="rounded-circle mr-2" width="30" height="30" src='/media/{{post.user.userprofile.profile_picture}}'>&nbsp;<strong>{{ post.user.username }}: {{ post.content }}</strong><br></p>
+                                </div>
+                                <div class="card-body">
+                                    {% for comment in comments%}
+                                        {% if comment.post_id == post.post_id %}
+                                        <div class="media" style="margin-bottom: 1em;"><img class="rounded-circle mr-2" width="30" height="30" src='/media/{{comment.user.userprofile.profile_picture}}'>
+                                            <div class="media-body">
+                                                <p>{{ comment.user }}: {{ comment.comment }}</p>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% empty %}
+                                    <div class="media" style="margin-bottom: 1em;">
+                                        <div class="media-body">
+                                            <p>There are no comments yet.</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+
+                                        <div class="media-body" style="width: 100%;">
+                                            <form method="post" id="comment" action={% url 'create_comment' group_id=group_id post_id=post.post_id%}>
+                                                {% csrf_token %}
+                                                <div style="width: 100%;"><textarea style="width: 100%;" placeholder="Write a comment" name="add_comment"></textarea></div>
+                                                <button class="btn btn-primary d-table-row float-right" type="submit" style="height: 38px;width: 64px;padding: 0px;">Send</button>
+                                            </form>
+                                        </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                                <p> </p>
+                                <p>There are no posts yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                            <h6 class="text-primary font-weight-bold m-0">Our goal to achieve by {{ group_info.date }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ group_info.goal_description}}<br></p>
+                    </div>
+                </div>
+{#                <div class="card shadow mb-3">#}
+{#                    <div class="card-header d-inline-flex py-3" style="width: 100%;height: 40px;padding-top: 16px;">#}
+{#                        <div class="d-none d-sm-block topbar-divider" style="min-width: 1%;max-width: 100%;width: 100%;"></div><button class="btn btn-primary" type="submit" style="font-size: 14px;padding: 0px;height: 22px;margin: -6px;width: 51px;">Edit</button></div>#}
+{#                    <div class="card-body">#}
+{#                        <p>Group Description<br></p>#}
+{#                    </div>#}
+{#                </div>#}
+                <a href={% url 'members' group_id=group_id%}>
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="text-primary font-weight-bold m-0">Members</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    {% for user in users %}
+                                        {% if user.username == is_admin %}
+                                        <thead>
+                                            <tr>
+                                                <th><img class="rounded-circle mr-2" width="30" height="30" src='/media/{{user.userprofile.profile_picture}}'>&nbsp;{{ user.username }}&nbsp;<span class="admin_tag" style="margin-bottom: 0px;"><strong>Admin</strong></span><br></th>
+                                            </tr>
+                                        </thead>
+                                            {% else %}
+                                                <tbody>
+                                                    <tr>
+                                                        <td><img class="rounded-circle mr-2" width="30" height="30" src='/media/{{user.userprofile.profile_picture}}'>&nbsp;<strong>{{ user.username }}</strong><br></td>
+                                                    </tr>
+                                                </tbody>
+                                        {% endif %}
+                                     {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+
+</div>
+{% endblock %}

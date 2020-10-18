@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{#enter page title here#}
+{% block title %} home {% endblock %}
+
+{% block bottom_script %}
+<script type="text/javascript">
+    {% if goals_to_check %}
+        $(window).on('load',function(){
+            $('#goals_to_check').modal('show');
+            $('#check').submit(function (event) {
+                const form = $(this);
+                event.preventDefault();
+                $('#goals_to_check').modal('hide');
+
+                $.ajax({
+                    url: form.attr('action'), // the endpoint
+                    type: "POST", // http method
+                    data: form.serialize(),
+
+                    // handle a successful response
+                    success: function (json) {
+                        //form.modal('hide');
+                        $('#goals_suggest').modal('show');
+                    },
+
+                    // handle a non-successful response
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                        //form.modal('hide');
+                        $('#goals_suggest').modal('show');
+                    }
+                });
+            });
+            {% if suggest_goal %}
+                $('.check-close').click(function(){
+                    $('#goals_suggest').modal('show');
+                });
+                $('#suggested_goal').submit(function (event) {
+                    const form = $(this);
+                    event.preventDefault();
+                    $('#goals_suggest').modal('hide');
+
+                    $.ajax({
+                        url: form.attr('action'), // the endpoint
+                        type: "POST", // http method
+                        data: form.serialize(),
+
+                        // handle a successful response
+                        success: function (json) {
+
+                        },
+
+                        // handle a non-successful response
+                        error: function (xhr, errmsg, err) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
+            {% endif %}
+        });
+    {% endif %}
+    $('#graph').attr(
+        "data-bs-chart",
+        `{
+            "type":"line",
+            "data":{
+                "labels": {{ data_label }},
+                "datasets":[{
+                    "label":"Weight",
+                    "fill":true,
+                    "data": {{ data }},
+                    "backgroundColor":"rgba(78, 115, 223, 0.05)",
+                    "borderColor":"rgba(78, 115, 223, 1)"
+                }]
+            },
+            "options":{
+                "maintainAspectRatio":false,
+                "legend":{
+                    "display":false,
+                    "position":"top",
+                    "reverse":false
+                },
+                "title":{
+                    "display":false,
+                    "text":""
+                },
+                "scales":{
+                    "xAxes":[{
+                        "scaleLabel": {
+                            "display": true,
+                            "labelString": "day",
+                            "fontSize": 15
+                        },
+                        "gridLines":{
+                            "color":"rgb(234, 236, 244)",
+                            "zeroLineColor":"rgb(234, 236, 244)",
+                            "drawBorder":false,
+                            "drawTicks":false,
+                            "borderDash":["2"],
+                            "zeroLineBorderDash":["2"],
+                            "drawOnChartArea":false
+                        },
+                        "ticks":{
+                            "fontColor":"#858796",
+                            "padding":20
+                        }
+                    }],
+                    "yAxes":[{
+                        "scaleLabel": {
+                            "display": true,
+                            "labelString": "weight (kg)",
+                            "fontSize": 15
+                        },
+                        "gridLines":{
+                            "color":"rgb(234, 236, 244)",
+                            "zeroLineColor":"rgb(234, 236, 244)",
+                            "drawBorder":false,
+                            "drawTicks":false,
+                            "borderDash":["2"],
+                            "zeroLineBorderDash":["2"]
+                        },
+                        "ticks":{
+                            "fontColor":"#858796",
+                            "padding":20
+                        }
+                    }]
+                }
+            }
+        }`
+    );
+</script>
+{% endblock %}
+
+{#page content#}
+{% block content %}
+<!-- pop up modal code -->
+<div role="dialog" tabindex="-1" class="modal fade" id="goals_to_check">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Goal Check</h4>
+                <button type="button" class="close check-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4> Have you met your goals today?</h4>
+                <form id="check" method="post" action="{% url 'checkin_goals' %}">
+                    {% csrf_token %}
+                    {% if weight %}
+                    <label for="basic-goal-update">update your weight today</label>
+                    <input type="number" class="form-control" value="{{ weight }}"
+                           name="basic-goal-update" style="width: 30%;display: inline;margin-left: 3em;">
+                    {% endif %}
+                    {% for goal in goals_to_check %}
+                        <label for="is-goal-checked">{{ goal.goal_id.goal_description }}</label>
+                        <input type="checkbox" class="pull-right"
+                               name="is-goal-checked" value="{{ goal.goal_id.goal_id }}"
+                               style="margin-top:1.5%;margin-right:5%;width: 1.25rem;height: 1.25rem;">
+                        <br>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light check-close" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="check">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div role="dialog" tabindex="-1" class="modal fade" id="goals_suggest">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Goal Suggestion</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4> Would you like to add the following goal?</h4>
+                <form id="suggested_goal" method="post" action="{% url 'create_custom_goal' %}">
+                    {% csrf_token %}
+                    <p>{{ suggest_goal.goal_description }}</p>
+                    <p>end date: {{ suggest_goal.date }}</p>
+                    <input type="hidden" value="{{ suggest_goal.goal_description }}" name="goal_description" />
+                    <input type="hidden" value="{{ suggest_goal.date }}" name="custom_goal_complete_date" />
+                    <input type="hidden" value="{{ suggest_goal.days }}" name="days" />
+                    <input type="hidden" value="{{ suggest_goal.period }}" name="period" />
+                    <input type="hidden" value="{{ suggest_goal.metric }}" name="period_metric" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="suggested_goal">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-sm-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-dark mb-0">Welcome Back, {{ user.get_username }}</h3>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="card" style="width: 66%;">
+            <div class="card-body">
+                <h4 class="card-title">Net Calorie Today</h4>
+                <div class="row">
+                    <div class="col-xl-1 offset-xl-2 mr-2" style="max-width: 20%;min-width: 10%;"><h4>food</h4>
+                        <h4 class="mb-0"><strong>{{ calorie_intake }}</strong></h4>
+                    </div>
+                    <div class="col mr-2 offset-xl-1" style="max-width: 1%;min-width: 1%;"><h2>-</h2></div>
+                    <div class="col mr-2 offset-xl-1" style="max-width: 20%;min-width: 10%;"><h4>exercise</h4>
+                        <h4 class="mb-0"><strong>{{ calories_burnt }}</strong></h4>
+                    </div>
+                    <div class="col mr-2" style="max-width: 1%;min-width: 1%;"><h4>=</h4></div>
+                    <div class="col mr-2"><h4>net calorie</h4>
+                        <h3 class="mb-0"><strong>{{ net_calorie }}</strong></h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-7 col-xl-8" style="margin-top: 0;padding-top: 1em;">
+        <div class="card shadow mb-4" style="height: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="text-primary font-weight-bold m-0">Weight trend</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    {% if data %}
+                    <canvas id="graph"></canvas>
+                    {% else %}
+                    <h3 style="text-align: center;">No data yet</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 col-xl-4" style="margin-top: 0;padding-top: 1em;">
+        <div class="card shadow mb-4" style="height: 100%;">
+            <div class="card-header py-3">
+                <h6 class="text-primary font-weight-bold m-0">Recent Goals</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for goal in recent_goals %}
+                <li class="list-group-item">
+                    <div class="col mr-2">
+                        <h6 class="mb-0"><strong>{{ goal.goal_id.goal_description }}</strong></h6>
+                        <span class="text-xs">{{ goal.goal_id.date | date:"d/m/Y" }}</span>
+                        <div class="progress">
+                            <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0" aria-valuemax="{{goal.total_progress}}" style="width: {{ goal.percentage }}%;"></div>
+                            <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>
+                        </div>
+                    </div>
+                </li>
+                {% empty %}
+                    <h3 style="text-align: center;">No goals yet</h3>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

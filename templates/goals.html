@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %} goals {% endblock %}
+
+{% block content %}
+<div class="d-sm-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-dark mb-0">Goals</h3>
+    <div role="alert" class="alert alert-success m-auto fade hide" id="alert">
+        <span><strong></strong></span>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="shadow card">
+            <a class="btn btn-link text-left card-header font-weight-bold" data-toggle="collapse" aria-expanded="false"
+               aria-controls="collapse-basic" href="#collapse-basic" role="button">Add Basic Goal</a>
+            <div class="collapse" id="collapse-basic">
+                <div class="card-body">
+                    <form id="add-basic-goal" method="post" action={% url 'create_goal' %}>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="target" style="margin-right: 2.2em;"><strong>target goal</strong><br /></label>
+                            <input type="number" class="form-control" value="65" name="target" />
+                        </div>
+                        <div class="form-group">
+                            <label for="metric" style="margin-right: 4.5em;"><strong>metric</strong><br /></label>
+                            <select class="form-control" name="metric">
+                                <optgroup label="metric">
+                                    <option value="WaistCircumference" selected>waist circumference</option>
+                                    <option value="Weight">weight</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="basic_goal_complete date" style="margin-right: 1em;"><strong>complete date</strong><br /></label>
+                            <input class="form-control form-control-sm" type="date" name="basic_goal_complete_date" />
+                        </div>
+                        <button class="btn btn-primary btn-block text-white btn-user" type="submit">Add basic goal</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="shadow card">
+            <a class="btn btn-link text-left card-header font-weight-bold" data-toggle="collapse" aria-expanded="false"
+               aria-controls="collapse-custom" href="#collapse-custom" role="button">Add Custom Goal</a>
+            <div class="collapse" id="collapse-custom">
+                <div class="card-body">
+                    <form id="add-custom-goal" method="post" action={% url 'create_custom_goal' %}>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="goal_description" style="margin-right: 2.2em;"><strong>goal description</strong><br /></label>
+                            <textarea class="form-control" name="goal_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="days" style="margin-right: 2.2em;"><strong>days</strong></label>
+                            <i class="fa fa-question-circle-o" rel="tooltip"
+                               title="Number of days in the period you want to complete the goal. E.g. [5] days a week" style="position:relative; float:right;"></i><br />
+                            <input type="number" class="form-control" value="3" name="days" />
+                        </div>
+                        <div class="form-group">
+                            <label for="period" style="margin-right: 4.5em;"><strong>period</strong></label>
+                            <i class="fa fa-question-circle-o" rel="tooltip"
+                               title="How long you want each period to be. E.g. 8 days every [2] weeks" style="position:relative; float:right;"></i><br />
+                            <div class="form-row">
+                                <div class="col-xl-8">
+                                    <input type="number" class="form-control" value="7" name="period" style="max-width: 100%;" />
+                                </div>
+                                <div class="col">
+                                    <select class="form-control" name="period_metric" style="max-width: 100%;">
+                                        <optgroup label="period_metric">
+                                            <option value="1" selected>days</option>
+                                            <option value="7">weeks</option>
+                                            <option value="30">months</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="custom_goal_complete_date" style="margin-right: 1em;"><strong>complete date</strong><br /></label>
+                            <input class="form-control form-control-sm" type="date" name="custom_goal_complete_date"/>
+                        </div>
+                        <button class="btn btn-primary btn-block text-white btn-user"
+                                type="submit">Add custom goal</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="text-dark mb-0" style="padding-top: 1em;">Ongoing</h3>
+<div class="row" id="goals" style="margin: 1em;margin-top: 1em;margin-right: 1em;">
+    {% include 'goals_display.html' %}
+</div>
+<div class="clearfix"></div>
+
+<h3 class="text-dark mb-0" style="padding-top: 1em;">Past</h3>
+<div class="row" style="margin: 1em;margin-top: 1em;margin-right: 1em;">
+    {% for goal in past_goals %}
+    <div class="col">
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0">
+                    <strong>Complete Date:</strong><br />
+                    <strong>{{goal.goal_id.date | date:"d/m/Y"}}</strong>
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="m-0">{{ goal.goal_id.goal_description }}</p>
+                <div class="progress">
+                    <div class="progress-bar" aria-valuenow="{{ goal.percentage }}" aria-valuemin="0" aria-valuemax="{{goal.total_progress}}"
+                         style="width: {{goal.percentage }}%; padding: 0">{{ goal.percentage }}%</div>
+                    <span class="justify-content-center d-flex position-absolute w-100">{{ goal.percentage }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <div class="col">
+            <h3 style="text-align: center;">No past goals</h3>
+        </div>
+    {% endfor %}
+    <div class="clearfix"></div>
+</div>
+{% endblock %}
+
+{% block bottom_script %}
+<script>
+    silent_send("#add-basic-goal", "#alert");
+    silent_send("#add-custom-goal", "#alert", "#goals", "{% url 'update_goals' %}");
+    $('input[name=custom_goal_complete_date]').attr({
+        min: new Date().toISOString().slice(0,10),
+    })
+</script>
+{% endblock %}
